@@ -1,0 +1,25 @@
+version: '3.2'
+services:
+  db:
+    image: postgres:14.1-alpine
+    environment:
+      PGDATA: /var/lib/postgresql/data/pgdata
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_HOST_AUTH_METHOD: trust
+    restart: always
+    volumes:
+      - 'pgdata:/var/lib/postgresql/data'
+
+  web:
+    image: v3cash/platform:1.0
+    ports:
+      - "4000:4000"
+    environment:
+      - MIX_ENV=prod
+    depends_on:
+      - db
+    env_file:
+      - .env
+volumes:
+  pgdata: null
