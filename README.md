@@ -1,2 +1,3 @@
 # infra
-Devops tools to run alexanderhamilton.io
+Devops tools to setup global infra for v3 dot cash
+
