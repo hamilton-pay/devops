@@ -20,7 +20,7 @@ provider "aws" {
   region  = var.aws_region
 }
 
-resource "aws_ecr_repository" "v3_cash_platform" {
+resource "aws_ecr_repository" "platform" {
   name                 = "v3.cash/platform"
   image_tag_mutability = "IMMUTABLE"
   image_scanning_configuration {
@@ -31,15 +31,15 @@ resource "aws_ecr_repository" "v3_cash_platform" {
   }
 }
 
-resource "aws_iam_user" "v3_cash_platform_ci_user" {
+resource "aws_iam_user" "platform-ci-user" {
   name = "platform_ci@v3.cash"
   tags = {
     Owner = var.aws_profile
   }
 }
 
-resource "aws_iam_policy" "v3_cash_platform_ci_policy" {
-  name        = "v3-cash-platform-ci-policy"
+resource "aws_iam_policy" "platform-ci-policy" {
+  name        = "platform-ci-policy"
   description = "iam policy to create platform container images"
   tags = {
     Owner = var.aws_profile
@@ -59,13 +59,13 @@ resource "aws_iam_policy" "v3_cash_platform_ci_policy" {
           "ecr:CompleteLayerUpload"
         ]
         Effect   = "Allow"
-        Resource = [aws_ecr_repository.v3_cash_platform.arn]
+        Resource = [aws_ecr_repository.platform.arn]
       }
     ]
   })
 }
 
-resource "aws_iam_policy" "ecr_base_policy" {
+resource "aws_iam_policy" "ecr-base-policy" {
   name        = "ecr-base-policy"
   description = "iam policy to get authorization for ecr"
   tags = {
@@ -86,4 +86,13 @@ resource "aws_iam_policy" "ecr_base_policy" {
   })
 }
 
+resource "aws_iam_user_policy_attachment" "ecr-base-policy-attach-ci-user" {
+  user       = aws_iam_user.platform-ci-user.name
+  policy_arn = aws_iam_policy.ecr-base-policy.arn
+}
+
+resource "aws_iam_user_policy_attachment" "ecr-platform-ci-policy-attach-ci-user" {
+  user       = aws_iam_user.platform-ci-user.name
+  policy_arn = aws_iam_policy.platform-ci-policy.arn
+}
 
