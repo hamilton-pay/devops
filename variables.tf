@@ -1,6 +1,6 @@
 variable "aws_profile" {
   type    = string
-  default = "infra"
+  default = "platform"
 }
 
 variable "aws_region" {

@@ -31,6 +31,96 @@ resource "aws_ecr_repository" "platform" {
   }
 }
 
+resource "aws_kms_key" "s3-state-key" {
+  description             = "KMS key is used to encrypt bucket objects"
+  deletion_window_in_days = 7
+}
+locals {
+  bucket_name = "v3-cash-${var.aws_profile}-terraform-state"
+  backups_bucket = "v3-cash-${var.aws_profile}-backup"
+}
+
+module "s3_bucket" {
+  source = "terraform-aws-modules/s3-bucket/aws"
+
+  bucket = local.bucket_name
+  acl    = "log-delivery-write"
+  block_public_acls = true
+  block_public_policy = true
+  restrict_public_buckets = true
+  ignore_public_acls = true
+  server_side_encryption_configuration = {
+    rule = {
+      apply_server_side_encryption_by_default = {
+        kms_master_key_id = aws_kms_key.s3-state-key.arn
+        sse_algorithm     = "aws:kms"
+      }
+    }
+  }
+
+  versioning = {
+    enabled = true
+  }
+
+  tags = {
+    "Owner" = var.aws_profile
+  }
+
+  logging = {
+    target_bucket = local.bucket_name
+    target_prefix = "logs/"
+  }
+
+}
+
+module "backups_bucket" {
+  source = "terraform-aws-modules/s3-bucket/aws"
+
+  bucket = local.backups_bucket
+  acl    = "log-delivery-write"
+  block_public_acls = true
+  block_public_policy = true
+  restrict_public_buckets = true
+  ignore_public_acls = true
+  server_side_encryption_configuration = {
+    rule = {
+      apply_server_side_encryption_by_default = {
+        kms_master_key_id = aws_kms_key.s3-state-key.arn
+        sse_algorithm     = "aws:kms"
+      }
+    }
+  }
+
+  versioning = {
+    enabled = true
+  }
+
+  tags = {
+    "Owner" = var.aws_profile
+  }
+
+  logging = {
+    target_bucket = local.bucket_name
+    target_prefix = "logs/"
+  }
+
+}
+
+resource "aws_dynamodb_table" "infra_state_lock" {
+  name           = "v3-cash-${var.aws_profile}-infra-state-lock"
+  billing_mode   = "PAY_PER_REQUEST"
+  hash_key       = "LockID"
+
+  attribute {
+    name = "LockID"
+    type = "S"
+  }
+
+  tags = {
+     Owner = var.aws_profile
+  }
+}
+
 resource "aws_iam_user" "platform-ci-user" {
   name = "platform_ci@v3.cash"
   tags = {
