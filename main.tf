@@ -17,7 +17,6 @@ terraform {
 
 
 provider "aws" {
-  profile = var.aws_profile
   region  = var.aws_region
 }
 
@@ -28,7 +27,7 @@ resource "aws_ecr_repository" "platform" {
     scan_on_push = true
   }
   tags = {
-    Owner = var.aws_profile
+    Owner = "platform"
   }
 }
 

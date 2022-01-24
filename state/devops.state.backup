@@ -1,0 +1,140 @@
+{
+  "version": 4,
+  "terraform_version": "1.1.2",
+  "serial": 25,
+  "lineage": "f8f41a89-e95d-5601-cd54-9c5a24bae5a8",
+  "outputs": {},
+  "resources": [
+    {
+      "mode": "managed",
+      "type": "aws_iam_user",
+      "name": "platform-ci-user",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "arn": "arn:aws:iam::437443849062:user/platform_ci@v3.cash",
+            "force_destroy": false,
+            "id": "platform_ci@v3.cash",
+            "name": "platform_ci@v3.cash",
+            "path": "/",
+            "permissions_boundary": null,
+            "tags": {
+              "tenant": "hamilton-pay"
+            },
+            "tags_all": {
+              "tenant": "hamilton-pay"
+            },
+            "unique_id": "AIDAWLWNPNNTGC2EZ56CG"
+          },
+          "sensitive_attributes": [],
+          "private": "bnVsbA=="
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_kms_key",
+      "name": "s3-state-key",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "arn": "arn:aws:kms:us-west-2:437443849062:key/5b694758-c8ad-4837-ba5c-5c31b1aa2890",
+            "bypass_policy_lockout_safety_check": false,
+            "customer_master_key_spec": "SYMMETRIC_DEFAULT",
+            "deletion_window_in_days": 7,
+            "description": "KMS key is used to encrypt bucket objects",
+            "enable_key_rotation": false,
+            "id": "5b694758-c8ad-4837-ba5c-5c31b1aa2890",
+            "is_enabled": true,
+            "key_id": "5b694758-c8ad-4837-ba5c-5c31b1aa2890",
+            "key_usage": "ENCRYPT_DECRYPT",
+            "multi_region": false,
+            "policy": "{\"Id\":\"key-default-1\",\"Statement\":[{\"Action\":\"kms:*\",\"Effect\":\"Allow\",\"Principal\":{\"AWS\":\"arn:aws:iam::437443849062:root\"},\"Resource\":\"*\",\"Sid\":\"Enable IAM User Permissions\"}],\"Version\":\"2012-10-17\"}",
+            "tags": {},
+            "tags_all": {}
+          },
+          "sensitive_attributes": [],
+          "private": "bnVsbA=="
+        }
+      ]
+    },
+    {
+      "module": "module.s3_bucket",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "this",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "index_key": 0,
+          "schema_version": 0,
+          "attributes": {
+            "acceleration_status": "",
+            "acl": "log-delivery-write",
+            "arn": "arn:aws:s3:::hamilton-pay-infra-state",
+            "bucket": "hamilton-pay-infra-state",
+            "bucket_domain_name": "hamilton-pay-infra-state.s3.amazonaws.com",
+            "bucket_prefix": null,
+            "bucket_regional_domain_name": "hamilton-pay-infra-state.s3.us-west-2.amazonaws.com",
+            "cors_rule": [],
+            "force_destroy": false,
+            "grant": [],
+            "hosted_zone_id": "Z3BJ6K6RIION7M",
+            "id": "hamilton-pay-infra-state",
+            "lifecycle_rule": [],
+            "logging": [
+              {
+                "target_bucket": "hamilton-pay-infra-state",
+                "target_prefix": "logs/"
+              }
+            ],
+            "object_lock_configuration": [],
+            "policy": null,
+            "region": "us-west-2",
+            "replication_configuration": [],
+            "request_payer": "BucketOwner",
+            "server_side_encryption_configuration": [
+              {
+                "rule": [
+                  {
+                    "apply_server_side_encryption_by_default": [
+                      {
+                        "kms_master_key_id": "arn:aws:kms:us-west-2:437443849062:key/5b694758-c8ad-4837-ba5c-5c31b1aa2890",
+                        "sse_algorithm": "aws:kms"
+                      }
+                    ],
+                    "bucket_key_enabled": false
+                  }
+                ]
+              }
+            ],
+            "tags": {
+              "tenant": "hamilton-pay"
+            },
+            "tags_all": {
+              "tenant": "hamilton-pay"
+            },
+            "versioning": [
+              {
+                "enabled": true,
+                "mfa_delete": false
+              }
+            ],
+            "website": [],
+            "website_domain": null,
+            "website_endpoint": null
+          },
+          "sensitive_attributes": [],
+          "private": "bnVsbA==",
+          "dependencies": [
+            "aws_kms_key.s3-state-key"
+          ]
+        }
+      ]
+    }
+  ]
+}
