@@ -1,7 +1,7 @@
 {
   "version": 4,
   "terraform_version": "1.1.2",
-  "serial": 40,
+  "serial": 93,
   "lineage": "f8f41a89-e95d-5601-cd54-9c5a24bae5a8",
   "outputs": {},
   "resources": [
@@ -14,7 +14,7 @@
         {
           "schema_version": 1,
           "attributes": {
-            "arn": "arn:aws:dynamodb:us-west-2:234916279039:table/infra-state-lock",
+            "arn": "arn:aws:dynamodb:us-west-2:437443849062:table/infra-state-lock",
             "attribute": [
               {
                 "name": "LockID",
@@ -74,7 +74,7 @@
         {
           "schema_version": 0,
           "attributes": {
-            "arn": "arn:aws:ecr:us-west-2:234916279039:repository/platform",
+            "arn": "arn:aws:ecr:us-west-2:437443849062:repository/platform",
             "encryption_configuration": [
               {
                 "encryption_type": "AES256",
@@ -89,8 +89,8 @@
             ],
             "image_tag_mutability": "IMMUTABLE",
             "name": "platform",
-            "registry_id": "234916279039",
-            "repository_url": "234916279039.dkr.ecr.us-west-2.amazonaws.com/platform",
+            "registry_id": "437443849062",
+            "repository_url": "437443849062.dkr.ecr.us-west-2.amazonaws.com/platform",
             "tags": {
               "owner": "infra"
             },
@@ -113,14 +113,14 @@
         {
           "schema_version": 0,
           "attributes": {
-            "arn": "arn:aws:iam::234916279039:policy/ecr-base-policy",
+            "arn": "arn:aws:iam::437443849062:policy/ecr-base-policy",
             "description": "iam policy to get authorization for ecr",
-            "id": "arn:aws:iam::234916279039:policy/ecr-base-policy",
+            "id": "arn:aws:iam::437443849062:policy/ecr-base-policy",
             "name": "ecr-base-policy",
             "name_prefix": null,
             "path": "/",
             "policy": "{\"Statement\":[{\"Action\":[\"ecr:GetAuthorizationToken\"],\"Effect\":\"Allow\",\"Resource\":\"*\"}],\"Version\":\"2012-10-17\"}",
-            "policy_id": "ANPATNMQZ6L7YNDHWZHRU",
+            "policy_id": "ANPAWLWNPNNTLBLQEDFJR",
             "tags": {
               "owner": "infra"
             },
@@ -142,14 +142,14 @@
         {
           "schema_version": 0,
           "attributes": {
-            "arn": "arn:aws:iam::234916279039:policy/platform-ci-policy",
+            "arn": "arn:aws:iam::437443849062:policy/platform-ci-policy",
             "description": "iam policy to create platform container images",
-            "id": "arn:aws:iam::234916279039:policy/platform-ci-policy",
+            "id": "arn:aws:iam::437443849062:policy/platform-ci-policy",
             "name": "platform-ci-policy",
             "name_prefix": null,
             "path": "/",
-            "policy": "{\"Statement\":[{\"Action\":[\"ecr:GetDownloadUrlForLayer\",\"ecr:BatchGetImage\",\"ecr:BatchCheckLayerAvailability\",\"ecr:PutImage\",\"ecr:InitiateLayerUpload\",\"ecr:UploadLayerPart\",\"ecr:CompleteLayerUpload\"],\"Effect\":\"Allow\",\"Resource\":[\"arn:aws:ecr:us-west-2:234916279039:repository/platform\"]}],\"Version\":\"2012-10-17\"}",
-            "policy_id": "ANPATNMQZ6L73NPARCNYT",
+            "policy": "{\"Statement\":[{\"Action\":[\"ecr:GetDownloadUrlForLayer\",\"ecr:BatchGetImage\",\"ecr:BatchCheckLayerAvailability\",\"ecr:PutImage\",\"ecr:InitiateLayerUpload\",\"ecr:UploadLayerPart\",\"ecr:CompleteLayerUpload\"],\"Effect\":\"Allow\",\"Resource\":[\"arn:aws:ecr:us-west-2:437443849062:repository/platform\"]}],\"Version\":\"2012-10-17\"}",
+            "policy_id": "ANPAWLWNPNNTO6PFUL46I",
             "tags": {
               "owner": "infra"
             },
@@ -167,76 +167,17 @@
     },
     {
       "mode": "managed",
-      "type": "aws_iam_user",
-      "name": "platform-ci-user",
-      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
-      "instances": [
-        {
-          "schema_version": 0,
-          "attributes": {
-            "arn": "arn:aws:iam::234916279039:user/platform_ci@v3.cash",
-            "force_destroy": false,
-            "id": "platform_ci@v3.cash",
-            "name": "platform_ci@v3.cash",
-            "path": "/",
-            "permissions_boundary": null,
-            "tags": {
-              "owner": "infra"
-            },
-            "tags_all": {
-              "owner": "infra"
-            },
-            "unique_id": "AIDATNMQZ6L7UADDVEXL7"
-          },
-          "sensitive_attributes": [],
-          "private": "bnVsbA=="
-        }
-      ]
-    },
-    {
-      "mode": "managed",
       "type": "aws_iam_user_policy_attachment",
       "name": "ecr-base-policy-attach-ci-user",
       "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
-      "instances": [
-        {
-          "schema_version": 0,
-          "attributes": {
-            "id": "platform_ci@v3.cash-20220124220158206400000001",
-            "policy_arn": "arn:aws:iam::234916279039:policy/ecr-base-policy",
-            "user": "platform_ci@v3.cash"
-          },
-          "sensitive_attributes": [],
-          "private": "bnVsbA==",
-          "dependencies": [
-            "aws_iam_policy.ecr-base-policy",
-            "aws_iam_user.platform-ci-user"
-          ]
-        }
-      ]
+      "instances": []
     },
     {
       "mode": "managed",
       "type": "aws_iam_user_policy_attachment",
       "name": "ecr-platform-ci-policy-attach-ci-user",
       "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
-      "instances": [
-        {
-          "schema_version": 0,
-          "attributes": {
-            "id": "platform_ci@v3.cash-20220124220159003200000002",
-            "policy_arn": "arn:aws:iam::234916279039:policy/platform-ci-policy",
-            "user": "platform_ci@v3.cash"
-          },
-          "sensitive_attributes": [],
-          "private": "bnVsbA==",
-          "dependencies": [
-            "aws_ecr_repository.platform",
-            "aws_iam_policy.platform-ci-policy",
-            "aws_iam_user.platform-ci-user"
-          ]
-        }
-      ]
+      "instances": []
     },
     {
       "mode": "managed",
@@ -247,18 +188,18 @@
         {
           "schema_version": 0,
           "attributes": {
-            "arn": "arn:aws:kms:us-west-2:234916279039:key/b1a4804e-a6bc-478b-bab5-873a181d1b66",
+            "arn": "arn:aws:kms:us-west-2:437443849062:key/1b452e4c-87e6-4c20-b0e7-ffe77dee193d",
             "bypass_policy_lockout_safety_check": false,
             "customer_master_key_spec": "SYMMETRIC_DEFAULT",
             "deletion_window_in_days": 7,
             "description": "KMS key is used to encrypt bucket objects",
             "enable_key_rotation": false,
-            "id": "b1a4804e-a6bc-478b-bab5-873a181d1b66",
+            "id": "1b452e4c-87e6-4c20-b0e7-ffe77dee193d",
             "is_enabled": true,
-            "key_id": "b1a4804e-a6bc-478b-bab5-873a181d1b66",
+            "key_id": "1b452e4c-87e6-4c20-b0e7-ffe77dee193d",
             "key_usage": "ENCRYPT_DECRYPT",
             "multi_region": false,
-            "policy": "{\"Id\":\"key-default-1\",\"Statement\":[{\"Action\":\"kms:*\",\"Effect\":\"Allow\",\"Principal\":{\"AWS\":\"arn:aws:iam::234916279039:root\"},\"Resource\":\"*\",\"Sid\":\"Enable IAM User Permissions\"}],\"Version\":\"2012-10-17\"}",
+            "policy": "{\"Id\":\"key-default-1\",\"Statement\":[{\"Action\":\"kms:*\",\"Effect\":\"Allow\",\"Principal\":{\"AWS\":\"arn:aws:iam::437443849062:root\"},\"Resource\":\"*\",\"Sid\":\"Enable IAM User Permissions\"}],\"Version\":\"2012-10-17\"}",
             "tags": null,
             "tags_all": {}
           },
@@ -276,40 +217,39 @@
       "instances": [
         {
           "index_key": 0,
-          "status": "tainted",
           "schema_version": 0,
           "attributes": {
-            "acceleration_status": null,
+            "acceleration_status": "",
             "acl": "log-delivery-write",
-            "arn": null,
-            "bucket": "terraform-infra-backup",
-            "bucket_domain_name": null,
+            "arn": "arn:aws:s3:::hamilton-pay-infra-backup",
+            "bucket": "hamilton-pay-infra-backup",
+            "bucket_domain_name": "hamilton-pay-infra-backup.s3.amazonaws.com",
             "bucket_prefix": null,
-            "bucket_regional_domain_name": null,
+            "bucket_regional_domain_name": "hamilton-pay-infra-backup.s3.us-west-2.amazonaws.com",
             "cors_rule": [],
             "force_destroy": false,
             "grant": [],
-            "hosted_zone_id": null,
-            "id": "terraform-infra-backup",
+            "hosted_zone_id": "Z3BJ6K6RIION7M",
+            "id": "hamilton-pay-infra-backup",
             "lifecycle_rule": [],
             "logging": [
               {
-                "target_bucket": "terraform-infra-state",
+                "target_bucket": "hamilton-pay-infra-state",
                 "target_prefix": "logs/"
               }
             ],
             "object_lock_configuration": [],
             "policy": null,
-            "region": null,
+            "region": "us-west-2",
             "replication_configuration": [],
-            "request_payer": null,
+            "request_payer": "BucketOwner",
             "server_side_encryption_configuration": [
               {
                 "rule": [
                   {
                     "apply_server_side_encryption_by_default": [
                       {
-                        "kms_master_key_id": "arn:aws:kms:us-west-2:234916279039:key/b1a4804e-a6bc-478b-bab5-873a181d1b66",
+                        "kms_master_key_id": "arn:aws:kms:us-west-2:437443849062:key/1b452e4c-87e6-4c20-b0e7-ffe77dee193d",
                         "sse_algorithm": "aws:kms"
                       }
                     ],
@@ -345,26 +285,104 @@
     {
       "module": "module.backups_bucket",
       "mode": "managed",
-      "type": "aws_s3_bucket_policy",
-      "name": "this",
-      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
-      "instances": []
-    },
-    {
-      "module": "module.backups_bucket",
-      "mode": "managed",
       "type": "aws_s3_bucket_public_access_block",
       "name": "this",
       "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
-      "instances": []
+      "instances": [
+        {
+          "index_key": 0,
+          "schema_version": 0,
+          "attributes": {
+            "block_public_acls": true,
+            "block_public_policy": true,
+            "bucket": "hamilton-pay-infra-backup",
+            "id": "hamilton-pay-infra-backup",
+            "ignore_public_acls": true,
+            "restrict_public_buckets": true
+          },
+          "sensitive_attributes": [],
+          "private": "bnVsbA==",
+          "dependencies": [
+            "aws_kms_key.s3-state-key",
+            "module.backups_bucket.aws_s3_bucket.this",
+            "module.backups_bucket.aws_s3_bucket_policy.this"
+          ]
+        }
+      ]
     },
     {
       "module": "module.s3_bucket",
       "mode": "managed",
-      "type": "aws_s3_bucket_policy",
+      "type": "aws_s3_bucket",
       "name": "this",
       "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
-      "instances": []
+      "instances": [
+        {
+          "index_key": 0,
+          "schema_version": 0,
+          "attributes": {
+            "acceleration_status": "",
+            "acl": "log-delivery-write",
+            "arn": "arn:aws:s3:::hamilton-pay-infra-state",
+            "bucket": "hamilton-pay-infra-state",
+            "bucket_domain_name": "hamilton-pay-infra-state.s3.amazonaws.com",
+            "bucket_prefix": null,
+            "bucket_regional_domain_name": "hamilton-pay-infra-state.s3.us-west-2.amazonaws.com",
+            "cors_rule": [],
+            "force_destroy": false,
+            "grant": [],
+            "hosted_zone_id": "Z3BJ6K6RIION7M",
+            "id": "hamilton-pay-infra-state",
+            "lifecycle_rule": [],
+            "logging": [
+              {
+                "target_bucket": "hamilton-pay-infra-state",
+                "target_prefix": "logs/"
+              }
+            ],
+            "object_lock_configuration": [],
+            "policy": null,
+            "region": "us-west-2",
+            "replication_configuration": [],
+            "request_payer": "BucketOwner",
+            "server_side_encryption_configuration": [
+              {
+                "rule": [
+                  {
+                    "apply_server_side_encryption_by_default": [
+                      {
+                        "kms_master_key_id": "arn:aws:kms:us-west-2:437443849062:key/1b452e4c-87e6-4c20-b0e7-ffe77dee193d",
+                        "sse_algorithm": "aws:kms"
+                      }
+                    ],
+                    "bucket_key_enabled": false
+                  }
+                ]
+              }
+            ],
+            "tags": {
+              "owner": "infra"
+            },
+            "tags_all": {
+              "owner": "infra"
+            },
+            "versioning": [
+              {
+                "enabled": true,
+                "mfa_delete": false
+              }
+            ],
+            "website": [],
+            "website_domain": null,
+            "website_endpoint": null
+          },
+          "sensitive_attributes": [],
+          "private": "bnVsbA==",
+          "dependencies": [
+            "aws_kms_key.s3-state-key"
+          ]
+        }
+      ]
     },
     {
       "module": "module.s3_bucket",
@@ -372,7 +390,27 @@
       "type": "aws_s3_bucket_public_access_block",
       "name": "this",
       "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
-      "instances": []
+      "instances": [
+        {
+          "index_key": 0,
+          "schema_version": 0,
+          "attributes": {
+            "block_public_acls": true,
+            "block_public_policy": true,
+            "bucket": "hamilton-pay-infra-state",
+            "id": "hamilton-pay-infra-state",
+            "ignore_public_acls": true,
+            "restrict_public_buckets": true
+          },
+          "sensitive_attributes": [],
+          "private": "bnVsbA==",
+          "dependencies": [
+            "aws_kms_key.s3-state-key",
+            "module.s3_bucket.aws_s3_bucket.this",
+            "module.s3_bucket.aws_s3_bucket_policy.this"
+          ]
+        }
+      ]
     }
   ]
 }

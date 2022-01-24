@@ -36,8 +36,8 @@ resource "aws_kms_key" "s3-state-key" {
   deletion_window_in_days = 7
 }
 locals {
-  bucket_name    = "v3-cash-infra-state"
-  backups_bucket = "v3-cash-infra-backup"
+  bucket_name    = "hamilton-pay-infra-state"
+  backups_bucket = "hamilton-pay-infra-backup"
 }
 
 module "s3_bucket" {
