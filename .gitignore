@@ -32,4 +32,4 @@ v3_cash_infra.config
 .gitsecret/keys/random_seed
 !*.secret
 .history
-v3_cash_platform.config
+v3_cash_platform.configstate/devops.state

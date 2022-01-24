@@ -10,7 +10,8 @@ terraform {
 }
 
 terraform {
-  backend "s3" {
+  backend "local" {
+    path = "state/devops.state"
   }
 }
 
@@ -21,7 +22,7 @@ provider "aws" {
 }
 
 resource "aws_ecr_repository" "platform" {
-  name                 = "v3.cash/platform"
+  name                 = "${var.tenant}/platform"
   image_tag_mutability = "IMMUTABLE"
   image_scanning_configuration {
     scan_on_push = true
@@ -36,19 +37,19 @@ resource "aws_kms_key" "s3-state-key" {
   deletion_window_in_days = 7
 }
 locals {
-  bucket_name = "v3-cash-${var.aws_profile}-terraform-state"
-  backups_bucket = "v3-cash-${var.aws_profile}-backup"
+  bucket_name    = "${var.tenant}-infra-state"
+  backups_bucket = "${var.tenant}-infra-backup"
 }
 
 module "s3_bucket" {
   source = "terraform-aws-modules/s3-bucket/aws"
 
-  bucket = local.bucket_name
-  acl    = "log-delivery-write"
-  block_public_acls = true
-  block_public_policy = true
+  bucket                  = local.bucket_name
+  acl                     = "log-delivery-write"
+  block_public_acls       = true
+  block_public_policy     = true
   restrict_public_buckets = true
-  ignore_public_acls = true
+  ignore_public_acls      = true
   server_side_encryption_configuration = {
     rule = {
       apply_server_side_encryption_by_default = {
@@ -63,7 +64,7 @@ module "s3_bucket" {
   }
 
   tags = {
-    "Owner" = var.aws_profile
+    "tenant" = var.tenant
   }
 
   logging = {
@@ -76,12 +77,12 @@ module "s3_bucket" {
 module "backups_bucket" {
   source = "terraform-aws-modules/s3-bucket/aws"
 
-  bucket = local.backups_bucket
-  acl    = "log-delivery-write"
-  block_public_acls = true
-  block_public_policy = true
+  bucket                  = local.backups_bucket
+  acl                     = "log-delivery-write"
+  block_public_acls       = true
+  block_public_policy     = true
   restrict_public_buckets = true
-  ignore_public_acls = true
+  ignore_public_acls      = true
   server_side_encryption_configuration = {
     rule = {
       apply_server_side_encryption_by_default = {
@@ -96,7 +97,7 @@ module "backups_bucket" {
   }
 
   tags = {
-    "Owner" = var.aws_profile
+    "tenant" = var.tenant
   }
 
   logging = {
@@ -106,10 +107,10 @@ module "backups_bucket" {
 
 }
 
-resource "aws_dynamodb_table" "infra_state_lock" {
-  name           = "v3-cash-${var.aws_profile}-infra-state-lock"
-  billing_mode   = "PAY_PER_REQUEST"
-  hash_key       = "LockID"
+resource "aws_dynamodb_table" "state_lock" {
+  name         = "${var.tenant}-infra-state-lock"
+  billing_mode = "PAY_PER_REQUEST"
+  hash_key     = "LockID"
 
   attribute {
     name = "LockID"
@@ -117,22 +118,22 @@ resource "aws_dynamodb_table" "infra_state_lock" {
   }
 
   tags = {
-     Owner = var.aws_profile
+    "tenant" = var.tenant
   }
 }
 
 resource "aws_iam_user" "platform-ci-user" {
   name = "platform_ci@v3.cash"
   tags = {
-    Owner = var.aws_profile
+    "tenant" = var.tenant
   }
 }
 
 resource "aws_iam_policy" "platform-ci-policy" {
   name        = "platform-ci-policy"
   description = "iam policy to create platform container images"
-  tags = {
-    Owner = var.aws_profile
+   tags = {
+    "tenant" = var.tenant
   }
 
   policy = jsonencode({
@@ -159,9 +160,8 @@ resource "aws_iam_policy" "ecr-base-policy" {
   name        = "ecr-base-policy"
   description = "iam policy to get authorization for ecr"
   tags = {
-    Owner = var.aws_profile
+    "tenant" = var.tenant
   }
-
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -174,6 +174,7 @@ resource "aws_iam_policy" "ecr-base-policy" {
       }
     ]
   })
+  
 }
 
 resource "aws_iam_user_policy_attachment" "ecr-base-policy-attach-ci-user" {
