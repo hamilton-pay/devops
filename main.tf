@@ -21,13 +21,13 @@ provider "aws" {
 }
 
 resource "aws_ecr_repository" "platform" {
-  name                 = "${var.tenant}/platform"
+  name                 = "platform"
   image_tag_mutability = "IMMUTABLE"
   image_scanning_configuration {
     scan_on_push = true
   }
   tags = {
-    Owner = "platform"
+    owner = "infra"
   }
 }
 
@@ -36,8 +36,8 @@ resource "aws_kms_key" "s3-state-key" {
   deletion_window_in_days = 7
 }
 locals {
-  bucket_name    = "${var.tenant}-infra-state"
-  backups_bucket = "${var.tenant}-infra-backup"
+  bucket_name    = "v3-cash-infra-state"
+  backups_bucket = "v3-cash-infra-backup"
 }
 
 module "s3_bucket" {
@@ -63,7 +63,7 @@ module "s3_bucket" {
   }
 
   tags = {
-    "tenant" = var.tenant
+    "owner" = "infra"
   }
 
   logging = {
@@ -95,8 +95,8 @@ module "backups_bucket" {
     enabled = true
   }
 
-  tags = {
-    "tenant" = var.tenant
+   tags = {
+    owner = "infra"
   }
 
   logging = {
@@ -107,7 +107,7 @@ module "backups_bucket" {
 }
 
 resource "aws_dynamodb_table" "state_lock" {
-  name         = "${var.tenant}-infra-state-lock"
+  name         = "infra-state-lock"
   billing_mode = "PAY_PER_REQUEST"
   hash_key     = "LockID"
 
@@ -116,23 +116,23 @@ resource "aws_dynamodb_table" "state_lock" {
     type = "S"
   }
 
-  tags = {
-    "tenant" = var.tenant
+   tags = {
+    owner = "infra"
   }
 }
 
 resource "aws_iam_user" "platform-ci-user" {
   name = "platform_ci@v3.cash"
-  tags = {
-    "tenant" = var.tenant
+   tags = {
+    owner = "infra"
   }
 }
 
 resource "aws_iam_policy" "platform-ci-policy" {
   name        = "platform-ci-policy"
   description = "iam policy to create platform container images"
-   tags = {
-    "tenant" = var.tenant
+    tags = {
+    owner = "infra"
   }
 
   policy = jsonencode({
@@ -158,8 +158,8 @@ resource "aws_iam_policy" "platform-ci-policy" {
 resource "aws_iam_policy" "ecr-base-policy" {
   name        = "ecr-base-policy"
   description = "iam policy to get authorization for ecr"
-  tags = {
-    "tenant" = var.tenant
+   tags = {
+    owner = "infra"
   }
   policy = jsonencode({
     Version = "2012-10-17"
