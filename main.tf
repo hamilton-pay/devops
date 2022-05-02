@@ -2,7 +2,7 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 3.27"
+      version = "~> 4.5.0"
     }
   }
 
@@ -15,9 +15,14 @@ terraform {
   }
 }
 
+locals {
+  src_location = "devops/main.tf"
+}
+
+
 
 provider "aws" {
-  region  = var.aws_region
+  region = var.aws_region
 }
 
 resource "aws_ecr_repository" "platform" {
@@ -27,7 +32,11 @@ resource "aws_ecr_repository" "platform" {
     scan_on_push = true
   }
   tags = {
-    owner = "infra"
+    owner        = "devops"
+    src_location = local.src_location
+  }
+  encryption_configuration {
+    encryption_type = "KMS"
   }
 }
 
@@ -63,7 +72,9 @@ module "s3_bucket" {
   }
 
   tags = {
-    "owner" = "infra"
+    "owner"      = "devops"
+    src_location = local.src_location
+
   }
 
   logging = {
@@ -95,8 +106,10 @@ module "backups_bucket" {
     enabled = true
   }
 
-   tags = {
-    owner = "infra"
+  tags = {
+    owner        = "devops"
+    src_location = local.src_location
+
   }
 
   logging = {
@@ -116,23 +129,27 @@ resource "aws_dynamodb_table" "state_lock" {
     type = "S"
   }
 
-   tags = {
-    owner = "infra"
+  tags = {
+    owner = "devops"
   }
 }
 
 resource "aws_iam_user" "platform-ci-user" {
   name = "platform_ci@v3.cash"
-   tags = {
-    owner = "infra"
+  tags = {
+    owner        = "devops"
+    src_location = local.src_location
+
   }
 }
 
 resource "aws_iam_policy" "platform-ci-policy" {
   name        = "platform-ci-policy"
   description = "iam policy to create platform container images"
-    tags = {
-    owner = "infra"
+  tags = {
+    owner        = "devops"
+    src_location = local.src_location
+
   }
 
   policy = jsonencode({
@@ -144,6 +161,7 @@ resource "aws_iam_policy" "platform-ci-policy" {
           "ecr:BatchGetImage",
           "ecr:BatchCheckLayerAvailability",
           "ecr:PutImage",
+          "ecr:BatchDeleteImage",
           "ecr:InitiateLayerUpload",
           "ecr:UploadLayerPart",
           "ecr:CompleteLayerUpload"
@@ -158,8 +176,10 @@ resource "aws_iam_policy" "platform-ci-policy" {
 resource "aws_iam_policy" "ecr-base-policy" {
   name        = "ecr-base-policy"
   description = "iam policy to get authorization for ecr"
-   tags = {
-    owner = "infra"
+  tags = {
+    owner        = "devops"
+    src_location = local.src_location
+
   }
   policy = jsonencode({
     Version = "2012-10-17"
@@ -173,7 +193,7 @@ resource "aws_iam_policy" "ecr-base-policy" {
       }
     ]
   })
-  
+
 }
 
 resource "aws_iam_user_policy_attachment" "ecr-base-policy-attach-ci-user" {
@@ -186,3 +206,60 @@ resource "aws_iam_user_policy_attachment" "ecr-platform-ci-policy-attach-ci-user
   policy_arn = aws_iam_policy.platform-ci-policy.arn
 }
 
+data "aws_vpc" "default_vpc" {
+  default = true
+}
+
+
+resource "aws_secretsmanager_secret" "stripe" {
+  name = "stripe"
+  tags = {
+    owner        = "devops"
+    src_location = local.src_location
+  }
+}
+
+resource "aws_secretsmanager_secret" "plaid" {
+  name = "plaid"
+  tags = {
+    owner        = "devops"
+    src_location = local.src_location
+  }
+}
+
+resource "aws_secretsmanager_secret" "cloudfare" {
+  name = "cloudfare"
+  tags = {
+    owner        = "devops"
+    src_location = local.src_location
+  }
+}
+
+
+
+resource "aws_secretsmanager_secret" "mailgun" {
+  name = "mailgun"
+  tags = {
+    owner        = "devops"
+    src_location = local.src_location
+  }
+}
+
+resource "aws_secretsmanager_secret_version" "cloudfare" {
+  secret_id     = aws_secretsmanager_secret.cloudfare.id
+  secret_string = jsonencode(var.cloudfare_secrets)
+}
+
+resource "aws_secretsmanager_secret_version" "mailgun" {
+  secret_id     = aws_secretsmanager_secret.mailgun.id
+  secret_string = jsonencode(var.mailgun_secrets)
+}
+
+resource "aws_secretsmanager_secret_version" "stripe" {
+  secret_id     = aws_secretsmanager_secret.stripe.id
+  secret_string = jsonencode(var.stripe_secrets)
+}
+resource "aws_secretsmanager_secret_version" "plaid" {
+  secret_id     = aws_secretsmanager_secret.plaid.id
+  secret_string = jsonencode(var.plaid_secrets)
+}

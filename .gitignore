@@ -32,4 +32,7 @@ v3_cash_infra.config
 .gitsecret/keys/random_seed
 !*.secret
 .history
-v3_cash_platform.configstate/devops.state
+v3_cash_platform.config
+state/devops.state
+state/devops.state.backup
+terraform.tfvars
