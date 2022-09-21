@@ -206,19 +206,9 @@ resource "aws_iam_user_policy_attachment" "ecr-platform-ci-policy-attach-ci-user
   policy_arn = aws_iam_policy.platform-ci-policy.arn
 }
 
-resource "aws_iam_user" "opslyft-user" {
-  name = "opslyftUser"
-  force_destroy = true
-}
-
-resource "aws_iam_user_login_profile" "opslyft-user-login-profile" {
-  user    = aws_iam_user.opslyft-user.name
-  pgp_key = "keybase:shivamplease"
-}
-
-resource "aws_iam_user_policy" "opslyft-readOnly-policy" {
+resource "aws_iam_policy" "opslyft-readonly-policy" {
   name        = "opslyftReadOnlyPolicy"
-  user        = aws_iam_user.opslyft-user.name
+  description = "Read only access policy for EC2, RDS, ECS, R53"
 
   policy = jsonencode({
     Version = "2012-10-17"
@@ -243,9 +233,25 @@ resource "aws_iam_user_policy" "opslyft-readOnly-policy" {
   })
 }
 
+resource "aws_iam_role" "opslyft-readonly-role" {
+  name="opslyftReadOnlyRole"
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid="AssumeRole"
+        Action = "sts:AssumeRole"
+        Effect   = "Allow"
+        Principal = {"AWS": "arn:aws:iam::612488371952:root"}
+      }
+    ]
+  })
+}
 
-output "password" {
-  value = aws_iam_user_login_profile.opslyft-user-login-profile.encrypted_password
+
+resource "aws_iam_role_policy_attachment" "opslyft-attach" {
+  role       = aws_iam_role.opslyft-readonly-role.name
+  policy_arn = aws_iam_policy.opslyft-readonly-policy.arn
 }
 
 
