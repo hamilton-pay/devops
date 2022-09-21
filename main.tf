@@ -259,6 +259,55 @@ resource "aws_iam_user_policy_attachment" "ecr-platform-ci-policy-attach-ci-user
   policy_arn = aws_iam_policy.platform-ci-policy.arn
 }
 
+resource "aws_iam_policy" "opslyft-readonly-policy" {
+  name        = "opslyftReadOnlyPolicy"
+  description = "Read only access policy for EC2, RDS, ECS, R53"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = [
+          "ec2:Get*",
+          "ec2:Describe*",
+          "ec2:List*",
+          "rds:Describe*",
+          "rds:List*",
+          "route53:Get*",
+          "route53:List*",
+          "ecs:List*",
+          "ecs:Describe*",
+          "elasticloadbalancing:Describe*"
+        ]
+        Effect   = "Allow"
+        Resource = "*"
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role" "opslyft-readonly-role" {
+  name="opslyftReadOnlyRole"
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid="AssumeRole"
+        Action = "sts:AssumeRole"
+        Effect   = "Allow"
+        Principal = {"AWS": "arn:aws:iam::612488371952:root"}
+      }
+    ]
+  })
+}
+
+
+resource "aws_iam_role_policy_attachment" "opslyft-attach" {
+  role       = aws_iam_role.opslyft-readonly-role.name
+  policy_arn = aws_iam_policy.opslyft-readonly-policy.arn
+}
+
+
 data "aws_vpc" "default_vpc" {
   default = true
 }
