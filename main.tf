@@ -196,11 +196,64 @@ resource "aws_iam_policy" "ecr-base-policy" {
 
 }
 
+resource "aws_iam_policy" "ecs-base-policy" {
+  name        = "ecs-base-ci-policy"
+  description = "iam policy to get authorization for ecr"
+  tags = {
+    owner        = "devops"
+    src_location = local.src_location
+
+  }
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = [
+          "ecs:ListTaskDefinitionFamilies",
+          "ecs:ListTaskDefinitions",
+          "ecs:DescribeTaskDefinition",
+          "ecs:RegisterTaskDefinition"
+        ]
+        Effect   = "Allow"
+        Resource = "*"
+      }
+    ]
+  })
+
+}
+
+# resource "aws_iam_policy" "ecs-platform-policy" {
+#   name        = "ecs-platform-ci-policy"
+#   description = "iam policy to get authorization for ecr"
+#   tags = {
+#     owner        = "devops"
+#     src_location = local.src_location
+
+#   }
+#   policy = jsonencode({
+#     Version = "2012-10-17"
+#     Statement = [
+#       {
+#         Action = [
+#           "ecs:RegisterTaskDefinition"
+#         ]
+#         Effect   = "Allow"
+#         Resource = "*"
+#       }
+#     ]
+#   })
+
+# }
+
+resource "aws_iam_user_policy_attachment" "ecs-platform-policy-attach-ci-user" {
+  user       = aws_iam_user.platform-ci-user.name
+  policy_arn = aws_iam_policy.ecs-base-policy.arn
+}
+
 resource "aws_iam_user_policy_attachment" "ecr-base-policy-attach-ci-user" {
   user       = aws_iam_user.platform-ci-user.name
   policy_arn = aws_iam_policy.ecr-base-policy.arn
 }
-
 resource "aws_iam_user_policy_attachment" "ecr-platform-ci-policy-attach-ci-user" {
   user       = aws_iam_user.platform-ci-user.name
   policy_arn = aws_iam_policy.platform-ci-policy.arn
