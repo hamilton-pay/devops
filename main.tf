@@ -295,7 +295,7 @@ resource "aws_iam_role" "opslyft-readonly-role" {
         Sid="AssumeRole"
         Action = "sts:AssumeRole"
         Effect   = "Allow"
-        Principal = {"AWS": "arn:aws:iam::612488371952:root"}
+        Principal = {"AWS": "arn:aws:iam::${var.opslyft_account_id}:root"}
       }
     ]
   })

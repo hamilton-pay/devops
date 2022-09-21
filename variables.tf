@@ -18,3 +18,7 @@ variable "stripe_secrets" {
 variable "plaid_secrets" {
   type = map(string)
 }
+
+variable "opslyft_account_id" {
+  type = string
+}
