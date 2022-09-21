@@ -206,6 +206,49 @@ resource "aws_iam_user_policy_attachment" "ecr-platform-ci-policy-attach-ci-user
   policy_arn = aws_iam_policy.platform-ci-policy.arn
 }
 
+resource "aws_iam_user" "opslyft-user" {
+  name = "opslyftUser"
+  force_destroy = true
+}
+
+resource "aws_iam_user_login_profile" "opslyft-user-login-profile" {
+  user    = aws_iam_user.opslyft-user.name
+  pgp_key = "keybase:shivamplease"
+}
+
+resource "aws_iam_user_policy" "opslyft-readOnly-policy" {
+  name        = "opslyftReadOnlyPolicy"
+  user        = aws_iam_user.opslyft-user.name
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = [
+          "ec2:Get*",
+          "ec2:Describe*",
+          "ec2:List*",
+          "rds:Describe*",
+          "rds:List*",
+          "route53:Get*",
+          "route53:List*",
+          "ecs:List*",
+          "ecs:Describe*",
+          "elasticloadbalancing:Describe*"
+        ]
+        Effect   = "Allow"
+        Resource = "*"
+      }
+    ]
+  })
+}
+
+
+output "password" {
+  value = aws_iam_user_login_profile.opslyft-user-login-profile.encrypted_password
+}
+
+
 data "aws_vpc" "default_vpc" {
   default = true
 }
